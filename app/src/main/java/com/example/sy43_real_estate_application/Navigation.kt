@@ -1,4 +1,4 @@
-package com.example.project
+package com.example.sy43_real_estate_application
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
