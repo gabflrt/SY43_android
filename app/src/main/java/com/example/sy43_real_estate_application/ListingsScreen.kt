@@ -14,10 +14,13 @@ import androidx.navigation.NavHostController
 @Composable
 fun ListingsScreen(navController: NavHostController) {
     var listings by remember { mutableStateOf(generateListings()) }
-    var showDialog by remember { mutableStateOf(false) }
+    var showFilterDialog by remember { mutableStateOf(false) }
+    var showSortDialog by remember { mutableStateOf(false) }
     var minPrice by remember { mutableStateOf(0f) }
     var maxPrice by remember { mutableStateOf(10000f) }
     var cityFilter by remember { mutableStateOf("") }
+    var sortByPriceAscending by remember { mutableStateOf(true) }
+
 
     ScreenContent(navController = navController) {
         Column(
@@ -36,7 +39,12 @@ fun ListingsScreen(navController: NavHostController) {
                     fontSize = 24.sp
                 )
                 Button(
-                    onClick = { showDialog = true },
+                    onClick = { showSortDialog = true },
+                ) {
+                    Text("Sort")
+                }
+                Button(
+                    onClick = { showFilterDialog = true },
                 ) {
                     Text("Filter")
                 }
@@ -61,9 +69,9 @@ fun ListingsScreen(navController: NavHostController) {
         }
     }
 
-    if (showDialog) {
+    if (showFilterDialog) {
         AlertDialog(
-            onDismissRequest = { showDialog = false },
+            onDismissRequest = { showFilterDialog = false },
             title = { Text(text = "Filters") },
             text = {
                 Column {
@@ -96,7 +104,7 @@ fun ListingsScreen(navController: NavHostController) {
                 Button(
                     onClick = {
                         listings = applyFilters(minPrice.toInt(), maxPrice.toInt(), cityFilter)
-                        showDialog = false
+                        showFilterDialog = false
                     },
                 ) {
                     Text("Apply Filter")
@@ -104,7 +112,52 @@ fun ListingsScreen(navController: NavHostController) {
             },
             dismissButton = {
                 Button(
-                    onClick = { showDialog = false },
+                    onClick = { showFilterDialog = false },
+                ) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+
+    if (showSortDialog) {
+        AlertDialog(
+            onDismissRequest = { showSortDialog = false },
+            title = { Text(text = "Sort by") },
+            text = {
+                Column {
+                    // Options de tri
+                    Row(
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    ) {
+                        RadioButton(
+                            selected = sortByPriceAscending,
+                            onClick = { sortByPriceAscending = true }
+                        )
+                        Text("Price Ascending")
+                    }
+                    Row {
+                        RadioButton(
+                            selected = !sortByPriceAscending,
+                            onClick = { sortByPriceAscending = false }
+                        )
+                        Text("Price Descending")
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        listings = applySort(sortByPriceAscending)
+                        showSortDialog = false
+                    },
+                ) {
+                    Text("Apply Sort")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showSortDialog = false },
                 ) {
                     Text("Close")
                 }
@@ -114,7 +167,7 @@ fun ListingsScreen(navController: NavHostController) {
 }
 
 fun generateListings(): List<Listing> {
-    return List(10) { index ->
+    return List(12) { index ->
         Listing(
             id = index + 1,
             city = "City ${index + 1}",
@@ -131,6 +184,15 @@ fun applyFilters(minPrice: Int, maxPrice: Int, city: String): List<Listing> {
         val matchesCity = city.isEmpty() || listing.city.contains(city, ignoreCase = true)
         matchesPrice && matchesCity
     }
+}
+
+fun applySort(sortByPriceAscending: Boolean): List<Listing> {
+    val sortedListings = generateListings().toMutableList()
+    sortedListings.sortBy { it.price }
+    if (!sortByPriceAscending) {
+        sortedListings.reverse()
+    }
+    return sortedListings
 }
 
 data class Listing(val id: Int, val city: String, val agency: String, val price: String)
