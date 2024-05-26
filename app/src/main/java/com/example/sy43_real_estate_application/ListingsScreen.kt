@@ -15,8 +15,9 @@ import androidx.navigation.NavHostController
 fun ListingsScreen(navController: NavHostController) {
     var listings by remember { mutableStateOf(generateListings()) }
     var showDialog by remember { mutableStateOf(false) }
-    var minPrice by remember { mutableStateOf("") }
-    var maxPrice by remember { mutableStateOf("") }
+    var minPrice by remember { mutableStateOf(0f) }
+    var maxPrice by remember { mutableStateOf(10000f) }
+    var cityFilter by remember { mutableStateOf("") }
 
     ScreenContent(navController = navController) {
         Column(
@@ -66,23 +67,35 @@ fun ListingsScreen(navController: NavHostController) {
             title = { Text(text = "Filters") },
             text = {
                 Column {
-                    OutlinedTextField(
+                    Text("Minimum Price: ${minPrice.toInt()} €")
+                    Slider(
                         value = minPrice,
                         onValueChange = { minPrice = it },
-                        label = { Text("Minimum Price") },
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        valueRange = 0f..10000f,
+                        steps = 9,
+                        modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    OutlinedTextField(
+                    Text("Maximum Price: ${maxPrice.toInt()} €")
+                    Slider(
                         value = maxPrice,
                         onValueChange = { maxPrice = it },
-                        label = { Text("Maximum Price") }
+                        valueRange = 0f..10000f,
+                        steps = 9,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    OutlinedTextField(
+                        value = cityFilter,
+                        onValueChange = { cityFilter = it },
+                        label = { Text("City") },
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
                     )
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        listings = applyPriceFilter(minPrice, maxPrice)
+                        listings = applyFilters(minPrice.toInt(), maxPrice.toInt(), cityFilter)
                         showDialog = false
                     },
                 ) {
@@ -111,13 +124,12 @@ fun generateListings(): List<Listing> {
     }
 }
 
-fun applyPriceFilter(minPrice: String, maxPrice: String): List<Listing> {
-    val min = if (minPrice.isNotEmpty()) minPrice.toInt() else Int.MIN_VALUE
-    val max = if (maxPrice.isNotEmpty()) maxPrice.toInt() else Int.MAX_VALUE
-
+fun applyFilters(minPrice: Int, maxPrice: Int, city: String): List<Listing> {
     return generateListings().filter { listing ->
         val price = listing.price.substringBefore(" €").toInt()
-        price in min..max
+        val matchesPrice = price in minPrice..maxPrice
+        val matchesCity = city.isEmpty() || listing.city.contains(city, ignoreCase = true)
+        matchesPrice && matchesCity
     }
 }
 
