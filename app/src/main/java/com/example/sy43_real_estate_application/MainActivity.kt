@@ -1,6 +1,6 @@
 package com.example.sy43_real_estate_application
 
-import android.os.Bundle
+import  android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme

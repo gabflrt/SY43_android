@@ -14,9 +14,13 @@ import androidx.navigation.NavHostController
 @Composable
 fun ListingsScreen(navController: NavHostController) {
     var listings by remember { mutableStateOf(generateListings()) }
-    var showDialog by remember { mutableStateOf(false) }
-    var minPrice by remember { mutableStateOf("") }
-    var maxPrice by remember { mutableStateOf("") }
+    var showFilterDialog by remember { mutableStateOf(false) }
+    var showSortDialog by remember { mutableStateOf(false) }
+    var minPrice by remember { mutableStateOf(0f) }
+    var maxPrice by remember { mutableStateOf(10000f) }
+    var cityFilter by remember { mutableStateOf("") }
+    var sortByPriceAscending by remember { mutableStateOf(true) }
+
 
     ScreenContent(navController = navController) {
         Column(
@@ -35,7 +39,12 @@ fun ListingsScreen(navController: NavHostController) {
                     fontSize = 24.sp
                 )
                 Button(
-                    onClick = { showDialog = true },
+                    onClick = { showSortDialog = true },
+                ) {
+                    Text("Sort")
+                }
+                Button(
+                    onClick = { showFilterDialog = true },
                 ) {
                     Text("Filter")
                 }
@@ -60,30 +69,42 @@ fun ListingsScreen(navController: NavHostController) {
         }
     }
 
-    if (showDialog) {
+    if (showFilterDialog) {
         AlertDialog(
-            onDismissRequest = { showDialog = false },
+            onDismissRequest = { showFilterDialog = false },
             title = { Text(text = "Filters") },
             text = {
                 Column {
-                    OutlinedTextField(
+                    Text("Minimum Price: ${minPrice.toInt()} €")
+                    Slider(
                         value = minPrice,
                         onValueChange = { minPrice = it },
-                        label = { Text("Minimum Price") },
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        valueRange = 0f..10000f,
+                        steps = 9,
+                        modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    OutlinedTextField(
+                    Text("Maximum Price: ${maxPrice.toInt()} €")
+                    Slider(
                         value = maxPrice,
                         onValueChange = { maxPrice = it },
-                        label = { Text("Maximum Price") }
+                        valueRange = 0f..10000f,
+                        steps = 9,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    OutlinedTextField(
+                        value = cityFilter,
+                        onValueChange = { cityFilter = it },
+                        label = { Text("City") },
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
                     )
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        listings = applyPriceFilter(minPrice, maxPrice)
-                        showDialog = false
+                        listings = applyFilters(minPrice.toInt(), maxPrice.toInt(), cityFilter)
+                        showFilterDialog = false
                     },
                 ) {
                     Text("Apply Filter")
@@ -91,7 +112,52 @@ fun ListingsScreen(navController: NavHostController) {
             },
             dismissButton = {
                 Button(
-                    onClick = { showDialog = false },
+                    onClick = { showFilterDialog = false },
+                ) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+
+    if (showSortDialog) {
+        AlertDialog(
+            onDismissRequest = { showSortDialog = false },
+            title = { Text(text = "Sort by") },
+            text = {
+                Column {
+                    // Options de tri
+                    Row(
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    ) {
+                        RadioButton(
+                            selected = sortByPriceAscending,
+                            onClick = { sortByPriceAscending = true }
+                        )
+                        Text("Price Ascending")
+                    }
+                    Row {
+                        RadioButton(
+                            selected = !sortByPriceAscending,
+                            onClick = { sortByPriceAscending = false }
+                        )
+                        Text("Price Descending")
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        listings = applySort(sortByPriceAscending)
+                        showSortDialog = false
+                    },
+                ) {
+                    Text("Apply Sort")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showSortDialog = false },
                 ) {
                     Text("Close")
                 }
@@ -101,7 +167,7 @@ fun ListingsScreen(navController: NavHostController) {
 }
 
 fun generateListings(): List<Listing> {
-    return List(10) { index ->
+    return List(12) { index ->
         Listing(
             id = index + 1,
             city = "City ${index + 1}",
@@ -111,14 +177,22 @@ fun generateListings(): List<Listing> {
     }
 }
 
-fun applyPriceFilter(minPrice: String, maxPrice: String): List<Listing> {
-    val min = if (minPrice.isNotEmpty()) minPrice.toInt() else Int.MIN_VALUE
-    val max = if (maxPrice.isNotEmpty()) maxPrice.toInt() else Int.MAX_VALUE
-
+fun applyFilters(minPrice: Int, maxPrice: Int, city: String): List<Listing> {
     return generateListings().filter { listing ->
         val price = listing.price.substringBefore(" €").toInt()
-        price in min..max
+        val matchesPrice = price in minPrice..maxPrice
+        val matchesCity = city.isEmpty() || listing.city.contains(city, ignoreCase = true)
+        matchesPrice && matchesCity
     }
+}
+
+fun applySort(sortByPriceAscending: Boolean): List<Listing> {
+    val sortedListings = generateListings().toMutableList()
+    sortedListings.sortBy { it.price }
+    if (!sortByPriceAscending) {
+        sortedListings.reverse()
+    }
+    return sortedListings
 }
 
 data class Listing(val id: Int, val city: String, val agency: String, val price: String)
