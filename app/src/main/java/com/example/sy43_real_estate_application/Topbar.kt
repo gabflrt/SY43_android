@@ -1,41 +1,52 @@
 package com.example.sy43_real_estate_application
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(navController: NavHostController) {
-    val navBackStackEntry = navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry.value?.destination?.route
-
-    TopAppBar(
-        modifier = Modifier.fillMaxWidth(),
-        title = { Text("Logo") },
-        actions = {
-            if (currentRoute != "login") {
-                Button(
-                    onClick = { navController.navigate("home") },
-                    modifier = Modifier.padding(end = 8.dp)
-                ) {
-                    Text("Home")
-                }
-                Button(
-                    onClick = { navController.navigate("login") },
-                    modifier = Modifier.padding(end = 8.dp)
-                ) {
-                    Text("Log in")
-                }
+fun TopBar(navController: NavHostController, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.primary, // Utilisez la couleur du thème pour les boutons
+                shape = RoundedCornerShape(8.dp) // Bordure arrondie
+            )
+            .padding(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(onClick = { navController.navigate("home") }) {
+                Image(
+                    painter = painterResource(id = R.drawable.house),
+                    contentDescription = "House Image",
+                    modifier = Modifier.size(24.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
+            Button(onClick = { navController.navigate("login") }) {
+                Image(
+                    painter = painterResource(id = R.drawable.user),
+                    contentDescription = "User Image",
+                    modifier = Modifier.size(24.dp),
+                    contentScale = ContentScale.Crop
+                )
             }
         }
-    )
+    }
 }
