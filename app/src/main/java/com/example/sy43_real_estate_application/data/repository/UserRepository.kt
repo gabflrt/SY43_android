@@ -16,4 +16,6 @@ class UserRepository @Inject constructor(private val userDao: UserDAO){
     fun getAllUsers() = userDao.getAllUsers()
 
     fun getUserById(id: Int) = userDao.getUserById(id)
+
+    suspend fun getUser(email: String, password: String) = userDao.getUser(email, password)
 }

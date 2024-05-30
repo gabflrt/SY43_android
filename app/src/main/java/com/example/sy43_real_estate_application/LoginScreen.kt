@@ -1,5 +1,6 @@
 package com.example.sy43_real_estate_application
 
+import UserViewModel
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,7 +25,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel, context: Context) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
@@ -56,7 +57,8 @@ fun LoginScreen(navController: NavHostController) {
 
         Button(
             onClick = {
-
+                userViewModel.loginUser(email.value, password.value, context)
+                navController.navigate("home")
             },
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
         ) {
