@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("org.jetbrains.kotlin.plugin.serialization") version "1.5.10"
 
+
 }
 
 android {
@@ -51,6 +52,7 @@ android {
     }
 }
 
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -65,10 +67,15 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-// Retrofit with Scalar Converter
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0") // Ajoutez cette ligne
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+
+    implementation("androidx.room:room-runtime:2.5.0")
+
+    implementation("com.google.code.gson:gson:2.8.9")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
