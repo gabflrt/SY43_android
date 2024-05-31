@@ -1,5 +1,6 @@
 package com.example.sy43_real_estate_application
 
+import UserViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -22,7 +23,7 @@ fun ListingsScreen(navController: NavHostController) {
     var sortByPriceAscending by remember { mutableStateOf(true) }
 
 
-    ScreenContent(navController = navController) {
+    ScreenContent(navController = navController, userViewModel = UserViewModel()) {
         Column(
             modifier = Modifier
                 .padding(16.dp)

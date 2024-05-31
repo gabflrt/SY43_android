@@ -1,5 +1,6 @@
 package com.example.sy43_real_estate_application
 
+import UserViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -14,9 +15,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
-    ScreenContent(navController = navController) {
-
+fun HomeScreen(navController: NavHostController, userViewModel: UserViewModel) {
+    ScreenContent(navController = navController, userViewModel = userViewModel) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
