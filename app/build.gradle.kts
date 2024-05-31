@@ -76,6 +76,8 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.8.9")
 
+    implementation("com.google.dagger:dagger:2.51.1")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
