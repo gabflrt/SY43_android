@@ -16,6 +16,7 @@ import androidx.navigation.NavHostController
 @Composable
 fun HomeScreen(navController: NavHostController) {
     ScreenContent(navController = navController) {
+
         Column(
             modifier = Modifier
                 .padding(16.dp)

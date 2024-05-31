@@ -13,13 +13,13 @@ private val retrofit = Retrofit.Builder()
     .baseUrl(BASE_URL)
     .build()
 
-interface MarsApiService {
+interface PhotosApiService {
     @GET("photos")
     suspend fun getPhotos(): String
 }
 
-object MarsApi {
-    val retrofitService : MarsApiService by lazy {
-        retrofit.create(MarsApiService::class.java)
+object PhotosApi {
+    val retrofitService : PhotosApiService by lazy {
+        retrofit.create(PhotosApiService::class.java)
     }
 }
