@@ -12,13 +12,21 @@ class UserViewModel : ViewModel() {
     private val _user = mutableStateOf<User?>(null)
     val user: State<User?> = _user
 
+    private val _loginError = mutableStateOf(false)
+    val loginError: State<Boolean> = _loginError
+
     fun loginUser(email: String, password: String, context: Context) {
         val database = InventoryDatabase.getDatabase(context)
         val userDao = database.userDao()
 
         viewModelScope.launch(Dispatchers.IO) {
             val user = userDao.getUser(email, password)
-            _user.value = user
+            if (user != null) {
+                _user.value = user
+                _loginError.value = false
+            } else {
+                _loginError.value = true
+            }
         }
     }
 

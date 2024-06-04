@@ -23,12 +23,24 @@ import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.material.*
 
 @Composable
 fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel, context: Context) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+
+    val user by remember { userViewModel.user }
+    val loginError by remember { userViewModel.loginError }
 
     Column(
         modifier = Modifier

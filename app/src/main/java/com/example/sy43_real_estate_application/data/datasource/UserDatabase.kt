@@ -12,20 +12,23 @@ abstract class UserDatabase: RoomDatabase() {
 }
 */
 
-@Database(entities = [User::class], version = 3)
+@Database(entities = [User::class], version = 4, exportSchema = false)
 abstract class InventoryDatabase : RoomDatabase() {
     abstract fun userDao(): UserDAO
 
     companion object {
         @Volatile
-        private var Instance: InventoryDatabase? = null
+        private var INSTANCE: InventoryDatabase? = null
+
         fun getDatabase(context: Context): InventoryDatabase {
-            // if the Instance is not null, return it, otherwise create a new database instance.
-            return Instance ?: synchronized(this) {
-                Room.databaseBuilder(context, InventoryDatabase::class.java, "user_database")
-                    .fallbackToDestructiveMigration()
-                    .build()
-                    .also { Instance = it }
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    InventoryDatabase::class.java,
+                    "inventory_database"
+                ).build()
+                INSTANCE = instance
+                instance
             }
         }
     }
