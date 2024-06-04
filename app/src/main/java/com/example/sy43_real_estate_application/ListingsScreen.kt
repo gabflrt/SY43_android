@@ -69,9 +69,9 @@ fun ListingsScreen(navController: NavHostController) {
                 items(listingsState.value) { listing ->
                     ListingItem(
                         id = listing.url,
-                        city = listing.url,  // Vous devrez remplacer cette ligne avec une propriété appropriée
-                        agency = listing.url,  // Vous devrez remplacer cette ligne avec une propriété appropriée
-                        price = listing.prix?.toString() ?: "N/A"
+                        prix = listing.prix?.toString() ?: "N/A",
+                        surface = listing.surface?.toString() ?: "N/A",
+                        dpe = listing.dpe?.toString() ?: "N/A"
                     )
                 }
             }
@@ -202,12 +202,12 @@ suspend fun fetchProperties(): List<ImmoProperty> {
 }
 
 @Composable
-fun ListingItem(id: String, city: String, agency: String, price: String) {
+fun ListingItem(id: String, prix: String, surface: String, dpe: String) {
     // Exemple de mise en page simple pour ListingItem, ajustez selon vos besoins
     Column(modifier = Modifier.padding(8.dp)) {
         Text(text = "ID: $id")
-        Text(text = "City: $city")
-        Text(text = "Agency: $agency")
-        Text(text = "Price: $price")
+        Text(text = "Prix: $prix")
+        Text(text = "Surface: $surface")
+        Text(text = "DPE: $dpe")
     }
 }
