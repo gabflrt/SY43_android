@@ -11,10 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.sy43_real_estate_application.model.ImmoProperty
+import com.example.sy43_real_estate_application.network.RealEstateApi
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
 @Composable
 fun ListingsScreen(navController: NavHostController) {
-    var listings by remember { mutableStateOf(generateListings()) }
     var showFilterDialog by remember { mutableStateOf(false) }
     var showSortDialog by remember { mutableStateOf(false) }
     var minPrice by remember { mutableStateOf(0f) }
@@ -22,6 +26,10 @@ fun ListingsScreen(navController: NavHostController) {
     var cityFilter by remember { mutableStateOf("") }
     var sortByPriceAscending by remember { mutableStateOf(true) }
 
+    // Utiliser `produceState` pour gérer l'état des propriétés récupérées de l'API
+    val listingsState = produceState<List<ImmoProperty>>(initialValue = emptyList()) {
+        value = fetchProperties()
+    }
 
     ScreenContent(navController = navController, userViewModel = UserViewModel()) {
         Column(
@@ -58,12 +66,12 @@ fun ListingsScreen(navController: NavHostController) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(listings) { listing ->
+                items(listingsState.value) { listing ->
                     ListingItem(
-                        id = listing.id,
-                        city = listing.city,
-                        agency = listing.agency,
-                        price = listing.price
+                        id = listing.url,
+                        city = listing.url,  // Vous devrez remplacer cette ligne avec une propriété appropriée
+                        agency = listing.url,  // Vous devrez remplacer cette ligne avec une propriété appropriée
+                        price = listing.prix?.toString() ?: "N/A"
                     )
                 }
             }
@@ -104,7 +112,8 @@ fun ListingsScreen(navController: NavHostController) {
             confirmButton = {
                 Button(
                     onClick = {
-                        listings = applyFilters(minPrice.toInt(), maxPrice.toInt(), cityFilter)
+                        // Mettez à jour les listings ici avec les filtres appliqués
+                        // listings = applyFilters(minPrice.toInt(), maxPrice.toInt(), cityFilter)
                         showFilterDialog = false
                     },
                 ) {
@@ -149,7 +158,8 @@ fun ListingsScreen(navController: NavHostController) {
             confirmButton = {
                 Button(
                     onClick = {
-                        listings = applySort(sortByPriceAscending)
+                        // Mettez à jour les listings ici avec le tri appliqué
+                        // listings = applySort(sortByPriceAscending)
                         showSortDialog = false
                     },
                 ) {
@@ -167,33 +177,37 @@ fun ListingsScreen(navController: NavHostController) {
     }
 }
 
-fun generateListings(): List<Listing> {
-    return List(12) { index ->
-        Listing(
-            id = index + 1,
-            city = "City ${index + 1}",
-            agency = "Agency ${index + 1}",
-            price = "${(index + 1) * 1000} €"
-        )
+suspend fun fetchProperties(): List<ImmoProperty> {
+    return try {
+        val response = RealEstateApi.retrofitService.getProperties()
+        response.data.map { property ->
+            ImmoProperty(
+                url = property.url,
+                prix = property.prix,
+                surface = property.surface,
+                charges = property.charges,
+                taxe_fonciere = property.taxe_fonciere,
+                dpe = property.dpe,
+                insertionDate = property.insertionDate,
+                photos = emptyList()  // Ajoutez ici les photos si nécessaire
+            )
+        }
+    } catch (e: IOException) {
+        // Gérez les erreurs de réseau ici
+        emptyList()
+    } catch (e: HttpException) {
+        // Gérez les erreurs HTTP ici
+        emptyList()
     }
 }
 
-fun applyFilters(minPrice: Int, maxPrice: Int, city: String): List<Listing> {
-    return generateListings().filter { listing ->
-        val price = listing.price.substringBefore(" €").toInt()
-        val matchesPrice = price in minPrice..maxPrice
-        val matchesCity = city.isEmpty() || listing.city.contains(city, ignoreCase = true)
-        matchesPrice && matchesCity
+@Composable
+fun ListingItem(id: String, city: String, agency: String, price: String) {
+    // Exemple de mise en page simple pour ListingItem, ajustez selon vos besoins
+    Column(modifier = Modifier.padding(8.dp)) {
+        Text(text = "ID: $id")
+        Text(text = "City: $city")
+        Text(text = "Agency: $agency")
+        Text(text = "Price: $price")
     }
 }
-
-fun applySort(sortByPriceAscending: Boolean): List<Listing> {
-    val sortedListings = generateListings().toMutableList()
-    sortedListings.sortBy { it.price }
-    if (!sortByPriceAscending) {
-        sortedListings.reverse()
-    }
-    return sortedListings
-}
-
-data class Listing(val id: Int, val city: String, val agency: String, val price: String)
