@@ -27,5 +27,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        /*val database = InventoryDatabase.getDatabase(applicationContext)
+        val propertyDao = database.userDao()
+        // Exemple d'insertion de données
+        val property = User(email = "test@example.com", firstName =  "John", lastName =  "Doe")
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            propertyDao.insertUser(property)
+        }*/
     }
 }

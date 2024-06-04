@@ -17,6 +17,6 @@ fun AppNavigation(context: Context) {
         composable("home") { HomeScreen(navController, userViewModel) }
         composable("login") { LoginScreen(navController, userViewModel, context) }
         composable("listings") { ListingsScreen(navController) }
-        composable("register") { RegisterScreen(navController, context) }
+        composable("register") { RegisterScreen(navController, userViewModel, context) }
     }
 }

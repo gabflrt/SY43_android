@@ -33,6 +33,7 @@ import androidx.compose.material.*
 
 @Composable
 fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel, context: Context) {
+    ScreenContent(navController = navController, userViewModel = userViewModel){
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
@@ -90,3 +91,5 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel, 
         )
     }
 }
+}
+

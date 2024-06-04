@@ -24,8 +24,8 @@ fun TopBar(navController: NavHostController, userViewModel: UserViewModel, modif
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.primary, // Utilisez la couleur du thème pour les boutons
-                shape = RoundedCornerShape(8.dp) // Bordure arrondie
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(8.dp)
             )
             .padding(8.dp)
     ) {
