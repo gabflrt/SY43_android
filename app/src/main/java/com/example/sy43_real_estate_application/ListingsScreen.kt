@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.sy43_real_estate_application.model.ImmoProperty
 import com.example.sy43_real_estate_application.network.RealEstateApi
-import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -188,15 +187,15 @@ suspend fun fetchProperties(): List<ImmoProperty> {
                 charges = property.charges,
                 taxe_fonciere = property.taxe_fonciere,
                 dpe = property.dpe,
-                insertionDate = property.insertionDate,
                 photos = emptyList()  // Ajoutez ici les photos si nécessaire
             )
         }
     } catch (e: IOException) {
-        // Gérez les erreurs de réseau ici
+        e.printStackTrace()
         emptyList()
     } catch (e: HttpException) {
         // Gérez les erreurs HTTP ici
+        e.printStackTrace()
         emptyList()
     }
 }

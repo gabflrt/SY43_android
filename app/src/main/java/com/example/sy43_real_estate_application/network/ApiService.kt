@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import com.google.gson.annotations.SerializedName
 
 // URL de base pour l'API
-private const val BASE_URL = "https://immo.quickapi.io/api/"
+private const val BASE_URL = "https://immo-excel.quickapi.io/api/"
 
 // Création de l'instance Retrofit
 private val retrofit = Retrofit.Builder()
@@ -16,7 +16,7 @@ private val retrofit = Retrofit.Builder()
 
 // Interface définissant l'API
 interface RealEstateApiService {
-    @GET("data?qapikey=33b4971d-6833-4cc6-ac45-f3483c0d79b3")
+    @GET("data?qapikey=39e5a6e8-cf24-46a5-8005-dc3443a0c673")
     suspend fun getProperties(): ApiResponse
 }
 
@@ -40,11 +40,9 @@ data class Meta(
 
 data class Property(
     val url: String,
-    val prix: Long?,
+    val prix: Double?,
     val surface: Double?,
-    val charges: Long?,
-    val taxe_fonciere: Long?,
-    val dpe: Int?,
-    @SerializedName("insertion_date")
-    val insertionDate: String
+    val charges: Double?,
+    val taxe_fonciere: Double?,
+    val dpe: Int?
 )
