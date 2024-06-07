@@ -15,6 +15,12 @@ import com.example.sy43_real_estate_application.model.ImmoProperty
 import com.example.sy43_real_estate_application.network.RealEstateApi
 import retrofit2.HttpException
 import java.io.IOException
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
 
 @Composable
 fun ListingsScreen(navController: NavHostController) {
@@ -67,10 +73,10 @@ fun ListingsScreen(navController: NavHostController) {
             ) {
                 items(listingsState.value) { listing ->
                     ListingItem(
-                        id = listing.url,
+                        image = listing.image ?: "https://www.century21agencedutheatre.com/imagesBien/s3/202/793/c21_202_793_28224_1_6A7F1FA6-CB6E-4117-98D4-9FC799BDA715.jpg",
                         prix = listing.prix?.toString() ?: "N/A",
                         surface = listing.surface?.toString() ?: "N/A",
-                        dpe = listing.dpe?.toString() ?: "N/A"
+                        dpe = listing.dpe ?: 0
                     )
                 }
             }
@@ -183,11 +189,13 @@ suspend fun fetchProperties(): List<ImmoProperty> {
             ImmoProperty(
                 url = property.url,
                 prix = property.prix,
+                ville = property.ville,
+                departement = property.departement,
                 surface = property.surface,
                 charges = property.charges,
                 taxe_fonciere = property.taxe_fonciere,
                 dpe = property.dpe,
-                photos = emptyList()  // Ajoutez ici les photos si nécessaire
+                image = property.image
             )
         }
     } catch (e: IOException) {
@@ -201,12 +209,36 @@ suspend fun fetchProperties(): List<ImmoProperty> {
 }
 
 @Composable
-fun ListingItem(id: String, prix: String, surface: String, dpe: String) {
-    // Exemple de mise en page simple pour ListingItem, ajustez selon vos besoins
+fun ListingItem(image: String, prix: String, surface: String, dpe: Int) {
     Column(modifier = Modifier.padding(8.dp)) {
-        Text(text = "ID: $id")
-        Text(text = "Prix: $prix")
-        Text(text = "Surface: $surface")
-        Text(text = "DPE: $dpe")
+        Image(
+            painter = rememberImagePainter(image),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(4f / 3f),
+            contentScale = ContentScale.Crop
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = "Prix: $prix €")
+        Text(text = "Surface: $surface m²")
+        if(dpe == 0){
+            Text(text = "DPE: Non disponible")
+        } else if(dpe == 1){
+            Text(text = "DPE: A")
+        } else if(dpe == 2) {
+            Text(text = "DPE: B")
+        } else if(dpe == 3) {
+            Text(text = "DPE: C")
+        } else if(dpe == 4) {
+            Text(text = "DPE: D")
+        } else if(dpe == 5) {
+            Text(text = "DPE: E")
+        } else if(dpe == 6) {
+            Text(text = "DPE: F")
+        } else if(dpe == 7) {
+            Text(text = "DPE: G")
+        }
+
     }
 }

@@ -4,10 +4,12 @@ import com.google.gson.annotations.SerializedName
 
 data class ImmoProperty(
     val url: String,
+    val ville: String,
+    val departement: Int?,
     val prix: Double?,
     val surface: Double?,
     val charges: Double?,
     val taxe_fonciere: Double?,
     val dpe: Int?,
-    val photos: List<ImmoProperty>
+    val image: String?
 )
