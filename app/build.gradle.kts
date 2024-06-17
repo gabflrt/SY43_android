@@ -89,6 +89,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     kapt ("com.google.dagger:hilt-compiler:2.44")
+    implementation("io.coil-kt:coil-compose:2.0.0")
 }
 kapt {
     correctErrorTypes = true
