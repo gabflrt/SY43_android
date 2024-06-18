@@ -175,6 +175,7 @@ suspend fun fetchProperties(): List<ImmoProperty> {
     return try {
         val response = RealEstateApi.retrofitService.getProperties()
         response.data.map { property ->
+            val dpe = if (property.dpe == 0) 8 else property.dpe
             ImmoProperty(
                 url = property.url,
                 prix = property.prix,
@@ -183,7 +184,7 @@ suspend fun fetchProperties(): List<ImmoProperty> {
                 surface = property.surface,
                 charges = property.charges,
                 taxe_fonciere = property.taxe_fonciere,
-                dpe = property.dpe,
+                dpe = dpe,
                 image = property.image
             )
         }
@@ -195,6 +196,7 @@ suspend fun fetchProperties(): List<ImmoProperty> {
         emptyList()
     }
 }
+
 
 @Composable
 fun ListingItem(
@@ -215,10 +217,9 @@ fun ListingItem(
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "Prix: $prix €")
+        Text(text = "Price: $prix €")
         Text(text = "Surface: $surface m²")
         when (dpe) {
-            0 -> Text(text = "DPE: Non disponible")
             1 -> Text(text = "DPE: A")
             2 -> Text(text = "DPE: B")
             3 -> Text(text = "DPE: C")
@@ -226,6 +227,7 @@ fun ListingItem(
             5 -> Text(text = "DPE: E")
             6 -> Text(text = "DPE: F")
             7 -> Text(text = "DPE: G")
+            8 -> Text(text = "DPE: Not available")
         }
         Button(onClick = onWishlistToggle) {
             Text(if (isWishlisted) "Remove from Wishlist" else "Add to Wishlist")

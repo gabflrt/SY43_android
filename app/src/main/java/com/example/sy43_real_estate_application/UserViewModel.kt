@@ -11,6 +11,7 @@ import com.example.sy43_real_estate_application.data.datasource.WishlistItem
 import com.example.sy43_real_estate_application.model.ImmoProperty
 
 class UserViewModel : ViewModel() {
+    // User part
     private val _user = mutableStateOf<User?>(null)
     val user: State<User?> = _user
 
@@ -36,6 +37,7 @@ class UserViewModel : ViewModel() {
         _user.value = null
     }
 
+    // Wishlist part
     private val _wishlistItems = mutableStateOf<List<WishlistItem>>(emptyList())
     val wishlistItems: State<List<WishlistItem>> = _wishlistItems
 
