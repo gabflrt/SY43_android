@@ -1,7 +1,9 @@
 package com.example.sy43_real_estate_application
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,15 +12,21 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import com.example.sy43_real_estate_application.model.ImmoProperty
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+
 
 @Composable
 fun ListingItem(
@@ -28,8 +36,11 @@ fun ListingItem(
     surface: String,
     dpe: Int,
     isWishlisted: Boolean,
-    onWishlistToggle: () -> Unit
+    onWishlistToggle: () -> Unit,
+    propertyUrl: String // Ajouter le paramètre pour l'URL de l'annonce
 ) {
+    val context = LocalContext.current
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -40,7 +51,6 @@ fun ListingItem(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                   // .clickable { navController.navigate("flat/$id") }
                     .padding(8.dp)
             ) {
                 Column {
@@ -74,10 +84,22 @@ fun ListingItem(
                     )
                 }
             }
+            Button(
+                onClick = {
+                    openUrlInBrowser(context, propertyUrl) // Utiliser l'URL de la propriété
+                }
+            ) {
+                Text("View Property")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = onWishlistToggle) {
                 Text(if (isWishlisted) "Remove from Wishlist" else "Add to Wishlist")
             }
         }
     }
+}
 
+private fun openUrlInBrowser(context: Context, url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    context.startActivity(intent)
 }

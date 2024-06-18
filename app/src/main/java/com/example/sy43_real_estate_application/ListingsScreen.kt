@@ -87,7 +87,8 @@ fun ListingsScreen(navController: NavHostController, userViewModel: UserViewMode
                             } else {
                                 userViewModel.addToWishlist(user?.id ?: 0, listing, context)
                             }
-                        }
+                        },
+                        propertyUrl = listing.url
                     )
                 }
             }

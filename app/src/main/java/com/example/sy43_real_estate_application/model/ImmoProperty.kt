@@ -3,7 +3,7 @@ package com.example.sy43_real_estate_application.model
 import com.google.gson.annotations.SerializedName
 
 data class ImmoProperty(
-    val url: String,
+    val url: String, // URL of the property
     val ville: String,
     val departement: Int?,
     val prix: Double?,

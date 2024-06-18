@@ -42,6 +42,7 @@ fun WishlistScreen(navController: NavHostController, userViewModel: UserViewMode
                         surface = item.surface?.toString() ?: "N/A",
                         dpe = item.dpe ?: 0,
                         isWishlisted = true,
+                        propertyUrl = item.propertyId,
                         onWishlistToggle = {
                             userViewModel.removeFromWishlist(
                                 user?.id ?: 0, ImmoProperty(
