@@ -47,10 +47,9 @@ fun TopBar(navController: NavHostController, userViewModel: UserViewModel, modif
             )
             Button(onClick = { navController.navigate("wishlist") }) {
                 Image(
-                    painter = painterResource(id = R.drawable.user), // I need to change that icon
+                    painter = painterResource(id = R.drawable.wishlist),
                     contentDescription = "Wishlist Image",
-                    modifier = Modifier.size(24.dp),
-                    contentScale = ContentScale.Crop
+                    modifier = Modifier.size(35.dp)
                 )
             }
             Button(onClick = { navController.navigate("login") }) {
