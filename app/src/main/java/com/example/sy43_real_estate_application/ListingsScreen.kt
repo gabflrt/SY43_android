@@ -27,10 +27,16 @@ fun ListingsScreen(navController: NavHostController, userViewModel: UserViewMode
     var sortByDpeAscending by remember { mutableStateOf(true) }
     var sortBySurfaceAscending by remember { mutableStateOf(true) }
 
+    // Temporary state for sort selection in the dialogs
+    var tempSortByPriceAscending by remember { mutableStateOf(sortByPriceAscending) }
+    var tempSortByDpeAscending by remember { mutableStateOf(sortByDpeAscending) }
+    var tempSortBySurfaceAscending by remember { mutableStateOf(sortBySurfaceAscending) }
+
     val listingsState = produceState<List<ImmoProperty>>(initialValue = emptyList()) {
         value = fetchProperties()
     }
 
+    // Apply the sorts on the listings
     val sortedListings = remember(listingsState.value, sortByPriceAscending, sortByDpeAscending, sortBySurfaceAscending) {
         applySorts(listingsState.value, sortByPriceAscending, sortByDpeAscending, sortBySurfaceAscending)
     }
@@ -57,6 +63,10 @@ fun ListingsScreen(navController: NavHostController, userViewModel: UserViewMode
                 Row {
                     Button(
                         onClick = {
+                            // Set temporary sort states to current sort states when opening the dialog
+                            tempSortByPriceAscending = sortByPriceAscending
+                            tempSortByDpeAscending = sortByDpeAscending
+                            tempSortBySurfaceAscending = sortBySurfaceAscending
                             showSortDialog = true
                         },
                     ) {
@@ -105,8 +115,8 @@ fun ListingsScreen(navController: NavHostController, userViewModel: UserViewMode
                         modifier = Modifier.padding(bottom = 4.dp)
                     ) {
                         RadioButton(
-                            selected = sortByPriceAscending,
-                            onClick = { sortByPriceAscending = true }
+                            selected = tempSortByPriceAscending,
+                            onClick = { tempSortByPriceAscending = true }
                         )
                         Text("Price Ascending")
                     }
@@ -114,8 +124,8 @@ fun ListingsScreen(navController: NavHostController, userViewModel: UserViewMode
                         modifier = Modifier.padding(bottom = 4.dp)
                     ) {
                         RadioButton(
-                            selected = !sortByPriceAscending,
-                            onClick = { sortByPriceAscending = false }
+                            selected = !tempSortByPriceAscending,
+                            onClick = { tempSortByPriceAscending = false }
                         )
                         Text("Price Descending")
                     }
@@ -123,29 +133,29 @@ fun ListingsScreen(navController: NavHostController, userViewModel: UserViewMode
                         modifier = Modifier.padding(bottom = 4.dp).padding(top = 8.dp)
                     ) {
                         RadioButton(
-                            selected = sortBySurfaceAscending,
-                            onClick = { sortBySurfaceAscending = true }
+                            selected = tempSortBySurfaceAscending,
+                            onClick = { tempSortBySurfaceAscending = true }
                         )
                         Text("Surface Ascending")
                     }
                     Row(Modifier.padding(bottom = 4.dp)) {
                         RadioButton(
-                            selected = !sortBySurfaceAscending,
-                            onClick = { sortBySurfaceAscending = false }
+                            selected = !tempSortBySurfaceAscending,
+                            onClick = { tempSortBySurfaceAscending = false }
                         )
                         Text("Surface Descending")
                     }
                     Row(Modifier.padding(bottom = 4.dp).padding(top = 8.dp)) {
                         RadioButton(
-                            selected = sortByDpeAscending,
-                            onClick = { sortByDpeAscending = true }
+                            selected = tempSortByDpeAscending,
+                            onClick = { tempSortByDpeAscending = true }
                         )
                         Text("DPE Ascending")
                     }
                     Row(Modifier.padding(bottom = 4.dp)) {
                         RadioButton(
-                            selected = !sortByDpeAscending,
-                            onClick = { sortByDpeAscending = false }
+                            selected = !tempSortByDpeAscending,
+                            onClick = { tempSortByDpeAscending = false }
                         )
                         Text("DPE Descending")
                     }
@@ -154,6 +164,10 @@ fun ListingsScreen(navController: NavHostController, userViewModel: UserViewMode
             confirmButton = {
                 Button(
                     onClick = {
+                        // Update the main sort states when the user confirms
+                        sortByPriceAscending = tempSortByPriceAscending
+                        sortBySurfaceAscending = tempSortBySurfaceAscending
+                        sortByDpeAscending = tempSortByDpeAscending
                         showSortDialog = false
                     },
                 ) {
@@ -170,8 +184,6 @@ fun ListingsScreen(navController: NavHostController, userViewModel: UserViewMode
         )
     }
 }
-
-
 
 suspend fun fetchProperties(): List<ImmoProperty> {
     return try {
@@ -227,3 +239,4 @@ fun applySorts(
 
     return sortedListings
 }
+
