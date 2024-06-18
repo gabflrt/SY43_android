@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -20,28 +21,24 @@ import retrofit2.HttpException
 import java.io.IOException
 
 @Composable
-fun ListingsScreen(navController: NavHostController) {
+fun ListingsScreen(navController: NavHostController, userViewModel: UserViewModel) {
     var showSortDialog by remember { mutableStateOf(false) }
     var sortByPriceAscending by remember { mutableStateOf(true) }
     var sortByDpeAscending by remember { mutableStateOf(true) }
     var sortBySurfaceAscending by remember { mutableStateOf(true) }
 
-    // Temporary state for sort selection in the dialogs
-    var tempSortByPriceAscending by remember { mutableStateOf(sortByPriceAscending) }
-    var tempSortByDpeAscending by remember { mutableStateOf(sortByDpeAscending) }
-    var tempSortBySurfaceAscending by remember { mutableStateOf(sortBySurfaceAscending) }
-
-    // Utiliser `produceState` pour gérer l'état des propriétés récupérées de l'API
     val listingsState = produceState<List<ImmoProperty>>(initialValue = emptyList()) {
         value = fetchProperties()
     }
 
-    // Apply the sorts on the listings
     val sortedListings = remember(listingsState.value, sortByPriceAscending, sortByDpeAscending, sortBySurfaceAscending) {
         applySorts(listingsState.value, sortByPriceAscending, sortByDpeAscending, sortBySurfaceAscending)
     }
 
-    ScreenContent(navController = navController, userViewModel = UserViewModel()) {
+    val user = userViewModel.user.value
+    val context = LocalContext.current
+
+    ScreenContent(navController = navController, userViewModel = userViewModel) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
@@ -60,9 +57,6 @@ fun ListingsScreen(navController: NavHostController) {
                 Row {
                     Button(
                         onClick = {
-                            tempSortByPriceAscending = sortByPriceAscending
-                            tempSortByDpeAscending = sortByDpeAscending
-                            tempSortBySurfaceAscending = sortBySurfaceAscending
                             showSortDialog = true
                         },
                     ) {
@@ -79,11 +73,20 @@ fun ListingsScreen(navController: NavHostController) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(sortedListings) { listing ->
+                    val isWishlisted = userViewModel.isWishlisted(user?.id ?: 0, listing.url)
                     ListingItem(
                         image = listing.image ?: "https://www.century21agencedutheatre.com/imagesBien/s3/202/793/c21_202_793_28224_1_6A7F1FA6-CB6E-4117-98D4-9FC799BDA715.jpg",
                         prix = listing.prix?.toString() ?: "N/A",
                         surface = listing.surface?.toString() ?: "N/A",
-                        dpe = listing.dpe ?: 0
+                        dpe = listing.dpe ?: 0,
+                        isWishlisted = isWishlisted,
+                        onWishlistToggle = {
+                            if (isWishlisted) {
+                                userViewModel.removeFromWishlist(user?.id ?: 0, listing, context)
+                            } else {
+                                userViewModel.addToWishlist(user?.id ?: 0, listing, context)
+                            }
+                        }
                     )
                 }
             }
@@ -100,8 +103,8 @@ fun ListingsScreen(navController: NavHostController) {
                         modifier = Modifier.padding(bottom = 4.dp)
                     ) {
                         RadioButton(
-                            selected = tempSortByPriceAscending,
-                            onClick = { tempSortByPriceAscending = true }
+                            selected = sortByPriceAscending,
+                            onClick = { sortByPriceAscending = true }
                         )
                         Text("Price Ascending")
                     }
@@ -109,40 +112,38 @@ fun ListingsScreen(navController: NavHostController) {
                         modifier = Modifier.padding(bottom = 4.dp)
                     ) {
                         RadioButton(
-                            selected = !tempSortByPriceAscending,
-                            onClick = { tempSortByPriceAscending = false }
+                            selected = !sortByPriceAscending,
+                            onClick = { sortByPriceAscending = false }
                         )
                         Text("Price Descending")
                     }
                     Row(
-                        modifier = Modifier.padding(bottom = 4.dp)  .padding (top = 8.dp)
+                        modifier = Modifier.padding(bottom = 4.dp).padding(top = 8.dp)
                     ) {
                         RadioButton(
-                            selected = tempSortBySurfaceAscending,
-                            onClick = { tempSortBySurfaceAscending = true }
+                            selected = sortBySurfaceAscending,
+                            onClick = { sortBySurfaceAscending = true }
                         )
                         Text("Surface Ascending")
                     }
-                    Row (Modifier.padding(bottom = 4.dp))
-                    {
+                    Row(Modifier.padding(bottom = 4.dp)) {
                         RadioButton(
-                            selected = !tempSortBySurfaceAscending,
-                            onClick = { tempSortBySurfaceAscending = false }
+                            selected = !sortBySurfaceAscending,
+                            onClick = { sortBySurfaceAscending = false }
                         )
                         Text("Surface Descending")
                     }
-                    Row (Modifier.padding(bottom = 4.dp) .padding (top = 8.dp))
-                    {
+                    Row(Modifier.padding(bottom = 4.dp).padding(top = 8.dp)) {
                         RadioButton(
-                            selected = tempSortByDpeAscending,
-                            onClick = { tempSortByDpeAscending = true }
+                            selected = sortByDpeAscending,
+                            onClick = { sortByDpeAscending = true }
                         )
                         Text("DPE Ascending")
                     }
-                    Row (Modifier.padding(bottom = 4.dp)){
+                    Row(Modifier.padding(bottom = 4.dp)) {
                         RadioButton(
-                            selected = !tempSortByDpeAscending,
-                            onClick = { tempSortByDpeAscending = false }
+                            selected = !sortByDpeAscending,
+                            onClick = { sortByDpeAscending = false }
                         )
                         Text("DPE Descending")
                     }
@@ -151,10 +152,6 @@ fun ListingsScreen(navController: NavHostController) {
             confirmButton = {
                 Button(
                     onClick = {
-                        // Update the main sort states when the user confirms
-                        sortByPriceAscending = tempSortByPriceAscending
-                        sortBySurfaceAscending = tempSortBySurfaceAscending
-                        sortByDpeAscending = tempSortByDpeAscending
                         showSortDialog = false
                     },
                 ) {
@@ -171,6 +168,8 @@ fun ListingsScreen(navController: NavHostController) {
         )
     }
 }
+
+
 
 suspend fun fetchProperties(): List<ImmoProperty> {
     return try {
@@ -198,7 +197,14 @@ suspend fun fetchProperties(): List<ImmoProperty> {
 }
 
 @Composable
-fun ListingItem(image: String, prix: String, surface: String, dpe: Int) {
+fun ListingItem(
+    image: String,
+    prix: String,
+    surface: String,
+    dpe: Int,
+    isWishlisted: Boolean,
+    onWishlistToggle: () -> Unit
+) {
     Column(modifier = Modifier.padding(8.dp)) {
         Image(
             painter = rememberImagePainter(image),
@@ -211,7 +217,7 @@ fun ListingItem(image: String, prix: String, surface: String, dpe: Int) {
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Prix: $prix €")
         Text(text = "Surface: $surface m²")
-        when(dpe) {
+        when (dpe) {
             0 -> Text(text = "DPE: Non disponible")
             1 -> Text(text = "DPE: A")
             2 -> Text(text = "DPE: B")
@@ -221,8 +227,13 @@ fun ListingItem(image: String, prix: String, surface: String, dpe: Int) {
             6 -> Text(text = "DPE: F")
             7 -> Text(text = "DPE: G")
         }
+        Button(onClick = onWishlistToggle) {
+            Text(if (isWishlisted) "Remove from Wishlist" else "Add to Wishlist")
+        }
     }
 }
+
+
 
 fun applySorts(
     listings: List<ImmoProperty>,

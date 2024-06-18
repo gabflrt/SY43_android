@@ -4,7 +4,6 @@ import UserViewModel
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -16,7 +15,8 @@ fun AppNavigation(context: Context) {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { HomeScreen(navController, userViewModel) }
         composable("login") { LoginScreen(navController, userViewModel, context) }
-        composable("listings") { ListingsScreen(navController) }
+        composable("listings") { ListingsScreen(navController, userViewModel) }
         composable("register") { RegisterScreen(navController, userViewModel, context) }
+        composable("wishlist") { WishlistScreen(navController, userViewModel, context) }
     }
 }

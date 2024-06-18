@@ -3,7 +3,6 @@ package com.example.sy43_real_estate_application
 import UserViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -41,13 +40,19 @@ fun TopBar(navController: NavHostController, userViewModel: UserViewModel, modif
                     contentScale = ContentScale.Crop
                 )
             }
-
             Text(
                 text = "Welcome ${user?.firstName ?: ""}!",
                 color = Color.White,
                 modifier = Modifier.padding(horizontal = 0.dp)
             )
-
+            Button(onClick = { navController.navigate("wishlist") }) {
+                Image(
+                    painter = painterResource(id = R.drawable.user), // I need to change that icon
+                    contentDescription = "Wishlist Image",
+                    modifier = Modifier.size(24.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
             Button(onClick = { navController.navigate("login") }) {
                 Image(
                     painter = painterResource(id = R.drawable.user),
