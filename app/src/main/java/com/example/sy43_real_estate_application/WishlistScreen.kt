@@ -36,6 +36,7 @@ fun WishlistScreen(navController: NavHostController, userViewModel: UserViewMode
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(wishlistItems) { item ->
                     ListingItem(
+                        navController = navController,
                         image = item.imageUrl,
                         prix = item.prix?.toString() ?: "N/A",
                         surface = item.surface?.toString() ?: "N/A",

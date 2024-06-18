@@ -75,6 +75,7 @@ fun ListingsScreen(navController: NavHostController, userViewModel: UserViewMode
                 items(sortedListings) { listing ->
                     val isWishlisted = userViewModel.isWishlisted(user?.id ?: 0, listing.url)
                     ListingItem(
+                        navController = navController,
                         image = listing.image ?: "https://www.century21agencedutheatre.com/imagesBien/s3/202/793/c21_202_793_28224_1_6A7F1FA6-CB6E-4117-98D4-9FC799BDA715.jpg",
                         prix = listing.prix?.toString() ?: "N/A",
                         surface = listing.surface?.toString() ?: "N/A",
@@ -196,46 +197,6 @@ suspend fun fetchProperties(): List<ImmoProperty> {
         emptyList()
     }
 }
-
-
-@Composable
-fun ListingItem(
-    image: String,
-    prix: String,
-    surface: String,
-    dpe: Int,
-    isWishlisted: Boolean,
-    onWishlistToggle: () -> Unit
-) {
-    Column(modifier = Modifier.padding(8.dp)) {
-        Image(
-            painter = rememberImagePainter(image),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(4f / 3f),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "Price: $prix €")
-        Text(text = "Surface: $surface m²")
-        when (dpe) {
-            1 -> Text(text = "DPE: A")
-            2 -> Text(text = "DPE: B")
-            3 -> Text(text = "DPE: C")
-            4 -> Text(text = "DPE: D")
-            5 -> Text(text = "DPE: E")
-            6 -> Text(text = "DPE: F")
-            7 -> Text(text = "DPE: G")
-            8 -> Text(text = "DPE: Not available")
-        }
-        Button(onClick = onWishlistToggle) {
-            Text(if (isWishlisted) "Remove from Wishlist" else "Add to Wishlist")
-        }
-    }
-}
-
-
 
 fun applySorts(
     listings: List<ImmoProperty>,
