@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 import com.example.sy43_real_estate_application.model.ImmoProperty
 
 // URL de base pour l'API
-private const val BASE_URL = "https://apparts.quickapi.io/api/"
+private const val BASE_URL = "https://appart.quickapi.io/api/"
 
 // Création de l'instance Retrofit
 private val retrofit = Retrofit.Builder()
@@ -17,7 +17,7 @@ private val retrofit = Retrofit.Builder()
 
 // Interface définissant l'API
 interface RealEstateApiService {
-    @GET("data?qapikey=719f4507-cdba-4882-a8ba-9fdbeeebc27d")
+    @GET("data?qapikey=e5b04c23-4741-4d5c-b86e-f97e88f7a7f0")
     suspend fun getProperties(): ApiResponse
 }
 
